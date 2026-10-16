@@ -1,5 +1,7 @@
-'use client'; // 2. CLIENT COMPONENT: A diretiva que diz ao Next.js para enviar este JS ao navegador
+'use client';
 
+// 1. Importamos os "Hooks" do React (ferramentas de interatividade)
+import { useState, useEffect } from 'react';
 import {
   LineChart,
   Line,
@@ -11,7 +13,6 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 
-// Definimos o tipo de dado que esperamos receber (TypeScript)
 type Leitura = {
   temperatura: number;
   umidade: number;
@@ -19,12 +20,41 @@ type Leitura = {
   timestamp: string;
 };
 
-export default function GraficoSensores({ dados }: { dados: Leitura[] }) {
-  // A API Python manda do mais novo pro mais velho.
-  // Pro gráfico, invertemos para a linha do tempo ir da esquerda pra direita.
+// Agora chamamos a propriedade de "dadosIniciais"
+export default function GraficoSensores({
+  dadosIniciais,
+}: {
+  dadosIniciais: Leitura[];
+}) {
+  // 2. ESTADO: Criamos uma variável 'dados' que, toda vez que for atualizada
+  // usando o 'setDados', fará o gráfico se redesenhar sozinho na tela.
+  const [dados, setDados] = useState<Leitura[]>(dadosIniciais);
+
+  // 3. EFEITO: O useEffect é o nosso "motor de fundo". Ele roda quando o gráfico aparece na tela.
+  useEffect(() => {
+    // Função que vai até a API Python buscar os dados
+    const buscarNovosDados = async () => {
+      try {
+        const resposta = await fetch('http://127.0.0.1:8000/api/sensores');
+        if (resposta.ok) {
+          const dadosAtualizados = await resposta.json();
+          setDados(dadosAtualizados); // Injeta os novos dados no Estado!
+        }
+      } catch (erro) {
+        console.error('Erro ao buscar dados na API:', erro);
+      }
+    };
+
+    // Cria um relógio (intervalo) que executa a função acima a cada 5000ms (5 segundos)
+    const relogio = setInterval(buscarNovosDados, 5000);
+
+    // Função de limpeza: se o usuário mudar de página, desligamos o relógio para não gastar memória
+    return () => clearInterval(relogio);
+  }, []); // Os colchetes vazios significam: "Ligue esse motor apenas uma vez ao carregar a página"
+
+  // O resto do código continua igual, apenas preparando os dados para o gráfico
   const dadosGrafico = [...dados].reverse();
 
-  // Formatador simples para a hora
   const formatarHora = (dataString: string) => {
     const data = new Date(dataString);
     return data.toLocaleTimeString('pt-BR', {
@@ -36,7 +66,9 @@ export default function GraficoSensores({ dados }: { dados: Leitura[] }) {
 
   return (
     <div className='bg-white p-6 rounded-xl shadow-sm border border-slate-200 h-[450px]'>
-      <h2 className='text-xl font-semibold mb-6'>Temperatura e Umidade</h2>
+      <h2 className='text-xl font-semibold mb-6'>
+        Monitoramento em Tempo Real (5s)
+      </h2>
 
       <ResponsiveContainer width='100%' height='100%'>
         <LineChart data={dadosGrafico}>
@@ -59,6 +91,8 @@ export default function GraficoSensores({ dados }: { dados: Leitura[] }) {
           />
           <Legend />
 
+          {/* O Recharts já tem animação nativa! Quando os dados mudam, 
+              ele cria uma transição suave (isAnimationActive é true por padrão) */}
           <Line
             type='monotone'
             dataKey='temperatura'
