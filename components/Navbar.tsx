@@ -18,7 +18,7 @@ export default function Navbar() {
             Painel Geral
           </Link>
           <Link
-            href='/historico'
+            href='/historico/temperatura'
             className='hover:text-sky-400 transition-colors'
           >
             Histórico
