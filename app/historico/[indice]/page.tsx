@@ -38,7 +38,7 @@ export default function HistoricoMedicoes() {
     setCarregando(true);
 
     // Constrói a URL dinamicamente baseada no que o usuário selecionou
-    let url = `http://localhost:8000/api/sensores/pesquisa?ano=${ano}`;
+    let url = `https://djublandiastation.onrender.com/api/sensores/pesquisa?ano=${ano}`;
     if (mes) url += `&mes=${mes}`;
     if (mes && dia) url += `&dia=${dia}`; // Só adiciona o dia se o mês estiver preenchido
 

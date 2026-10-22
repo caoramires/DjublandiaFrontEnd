@@ -28,7 +28,7 @@ export default function GraficoSensores() {
     const buscarNovosDados = async () => {
       try {
         const resposta = await fetch(
-          'http://localhost:8000/api/sensores/recentes',
+          'https://djublandiastation.onrender.com/api/sensores/recentes',
         );
         if (resposta.ok) {
           const dadosAtualizados = await resposta.json();
