@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 import { useParams } from 'next/navigation';
 import {
   LineChart,
@@ -21,7 +21,7 @@ const configMetricas: Record<string, { cor: string; label: string }> = {
   pressao: { cor: '#a855f7', label: 'Pressão (hPa)' },
 };
 
-export default function HistoricoMedicoes() {
+function HistoricoConteudo() {
   const params = useParams();
   const indice = (params.indice as string) || 'temperatura';
   const configAtual = configMetricas[indice] || configMetricas.temperatura;
@@ -229,5 +229,19 @@ export default function HistoricoMedicoes() {
         </div>
       )}
     </main>
+  );
+}
+// Esta é a nova função que a Vercel vai exportar e pré-renderizar com sucesso
+export default function HistoricoMedicoes() {
+  return (
+    <Suspense
+      fallback={
+        <div className='p-12 text-center text-slate-500'>
+          Carregando histórico...
+        </div>
+      }
+    >
+      <HistoricoConteudo />
+    </Suspense>
   );
 }
