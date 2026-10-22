@@ -1,3 +1,5 @@
+//  app/historico/[indice]/page.tsx
+
 'use client';
 
 import { useState, Suspense } from 'react';
@@ -26,10 +28,9 @@ function HistoricoConteudo() {
   const indice = (params.indice as string) || 'temperatura';
   const configAtual = configMetricas[indice] || configMetricas.temperatura;
 
-  // Estados separados para Ano, Mês e Dia
   const [ano, setAno] = useState(new Date().getFullYear().toString());
-  const [mes, setMes] = useState(''); // Vazio = Ano todo
-  const [dia, setDia] = useState(''); // Vazio = Mês todo
+  const [mes, setMes] = useState('');
+  const [dia, setDia] = useState('');
 
   const [resultados, setResultados] = useState<any[]>([]);
   const [carregando, setCarregando] = useState(false);
@@ -37,10 +38,12 @@ function HistoricoConteudo() {
   const buscarDados = async () => {
     setCarregando(true);
 
-    // Constrói a URL dinamicamente baseada no que o usuário selecionou
-    let url = `https://djublandiastation.onrender.com/api/sensores/pesquisa?ano=${ano}`;
+    const loc = localStorage.getItem('localidadeSelecionada') || 'Campinas';
+
+    // Constrói a URL dinamicamente injetando a localidade
+    let url = `https://djublandiastation.onrender.com/api/sensores/pesquisa?localidade=${loc}&ano=${ano}`;
     if (mes) url += `&mes=${mes}`;
-    if (mes && dia) url += `&dia=${dia}`; // Só adiciona o dia se o mês estiver preenchido
+    if (mes && dia) url += `&dia=${dia}`;
 
     try {
       const resposta = await fetch(url);
@@ -54,8 +57,6 @@ function HistoricoConteudo() {
     setCarregando(false);
   };
 
-  // Se for um período longo (ex: um ano inteiro), formatar a hora e a data fica confuso.
-  // Vamos formatar o eixo X de forma inteligente baseada no volume de dados.
   const formatarEixoX = (dataString: any) => {
     if (!dataString) return '';
     const d = new Date(dataString);
@@ -85,13 +86,14 @@ function HistoricoConteudo() {
   };
 
   return (
-    <main className='p-8 max-w-5xl mx-auto min-h-screen text-slate-100'>
-      <h1 className='text-3xl font-bold mb-6 capitalize'>
+    // Ajuste de padding responsivo
+    <main className='p-4 md:p-8 max-w-5xl mx-auto min-h-screen text-slate-100'>
+      <h1 className='text-2xl md:text-3xl font-bold mb-6 capitalize'>
         Histórico: {indice}
       </h1>
 
-      {/* Menu de Navegação */}
-      <div className='flex gap-4 mb-8 border-b border-slate-200 pb-4'>
+      {/* Menu de Navegação - Scroll horizontal no celular */}
+      <div className='flex gap-2 md:gap-4 mb-8 border-b border-slate-200 pb-4 overflow-x-auto whitespace-nowrap scrollbar-hide'>
         {Object.keys(configMetricas).map((chave) => (
           <Link
             key={chave}
@@ -107,14 +109,14 @@ function HistoricoConteudo() {
         ))}
       </div>
 
-      {/* Filtros Livres */}
-      <div className='bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-700 mb-8 flex flex-wrap gap-4 items-end'>
-        <div className='flex flex-col gap-2'>
+      {/* Filtros Livres - Organização flexível em telas menores */}
+      <div className='bg-slate-800 p-4 md:p-6 rounded-xl shadow-sm border border-slate-700 mb-8 flex flex-col md:flex-row flex-wrap gap-4 md:items-end'>
+        <div className='flex flex-col gap-2 w-full md:w-auto'>
           <label className='font-semibold text-slate-300 text-sm'>Ano</label>
           <select
             value={ano}
             onChange={(e) => setAno(e.target.value)}
-            className='border border-slate-600 p-2 rounded-lg outline-none bg-slate-900 text-slate-100 min-w-[100px] focus:border-sky-500'
+            className='border border-slate-600 p-2 rounded-lg outline-none bg-slate-900 text-slate-100 focus:border-sky-500 w-full md:min-w-[100px]'
           >
             <option value='2024'>2024</option>
             <option value='2025'>2025</option>
@@ -122,7 +124,7 @@ function HistoricoConteudo() {
           </select>
         </div>
 
-        <div className='flex flex-col gap-2'>
+        <div className='flex flex-col gap-2 w-full md:w-auto'>
           <label className='font-semibold text-slate-300 text-sm'>Mês</label>
           <select
             value={mes}
@@ -130,7 +132,7 @@ function HistoricoConteudo() {
               setMes(e.target.value);
               setDia('');
             }}
-            className='border border-slate-600 p-2 rounded-lg outline-none bg-slate-900 text-slate-100 min-w-[140px] focus:border-sky-500'
+            className='border border-slate-600 p-2 rounded-lg outline-none bg-slate-900 text-slate-100 focus:border-sky-500 w-full md:min-w-[140px]'
           >
             <option value=''>Ano Inteiro</option>
             <option value='1'>Janeiro</option>
@@ -149,12 +151,12 @@ function HistoricoConteudo() {
         </div>
 
         {mes && (
-          <div className='flex flex-col gap-2'>
+          <div className='flex flex-col gap-2 w-full md:w-auto'>
             <label className='font-semibold text-slate-300 text-sm'>Dia</label>
             <select
               value={dia}
               onChange={(e) => setDia(e.target.value)}
-              className='border border-slate-600 p-2 rounded-lg outline-none bg-slate-900 text-slate-100 min-w-[120px] focus:border-sky-500'
+              className='border border-slate-600 p-2 rounded-lg outline-none bg-slate-900 text-slate-100 focus:border-sky-500 w-full md:min-w-[120px]'
             >
               <option value=''>Mês Inteiro</option>
               {Array.from({ length: 31 }, (_, i) => i + 1).map((d) => (
@@ -168,21 +170,21 @@ function HistoricoConteudo() {
 
         <button
           onClick={buscarDados}
-          className='bg-sky-600 text-white px-6 py-2 rounded-lg hover:bg-sky-700 transition font-medium h-[42px] ml-auto border border-sky-500'
+          className='bg-sky-600 text-white px-6 py-2 rounded-lg hover:bg-sky-700 transition font-medium h-[42px] md:ml-auto border border-sky-500 w-full md:w-auto'
           disabled={carregando}
         >
           {carregando ? 'Buscando...' : 'Pesquisar Banco'}
         </button>
       </div>
 
-      {/* Gráfico */}
+      {/* Gráfico responsivo */}
       {resultados.length > 0 ? (
-        <div className='bg-white p-6 rounded-xl shadow-sm border border-slate-200 h-[500px] flex flex-col'>
-          <div className='mb-6 flex justify-between items-center'>
-            <h2 className='text-xl font-semibold text-slate-800'>
+        <div className='bg-white p-4 md:p-6 rounded-xl shadow-sm border border-slate-200 h-[400px] md:h-[500px] flex flex-col'>
+          <div className='mb-6 flex flex-col md:flex-row md:justify-between md:items-center gap-2'>
+            <h2 className='text-lg md:text-xl font-semibold text-slate-800'>
               Tendência Evolutiva
             </h2>
-            <span className='text-sm bg-slate-100 text-slate-600 px-3 py-1 rounded-full font-medium border border-slate-200'>
+            <span className='text-xs md:text-sm bg-slate-100 text-slate-600 px-3 py-1 rounded-full font-medium border border-slate-200 w-fit'>
               {resultados.length} leituras encontradas
             </span>
           </div>
@@ -223,7 +225,7 @@ function HistoricoConteudo() {
           </div>
         </div>
       ) : (
-        <div className='text-center p-12 text-slate-500 bg-white rounded-xl border border-slate-200 border-dashed'>
+        <div className='text-center p-8 md:p-12 text-slate-500 bg-white rounded-xl border border-slate-200 border-dashed'>
           Selecione o período de tempo e clique em Pesquisar para ver as
           tendências.
         </div>
@@ -231,7 +233,7 @@ function HistoricoConteudo() {
     </main>
   );
 }
-// Esta é a nova função que a Vercel vai exportar e pré-renderizar com sucesso
+
 export default function HistoricoMedicoes() {
   return (
     <Suspense

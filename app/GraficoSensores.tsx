@@ -1,3 +1,4 @@
+// Grafico\sensores.tsx
 'use client';
 import { useState, useEffect } from 'react';
 import {
@@ -17,40 +18,50 @@ type Leitura = {
   vento: number;
   pressao: number;
   timestamp: string;
+  localidade?: string;
 };
 
-// 1. Removemos o parâmetro dadosIniciais
 export default function GraficoSensores() {
-  // 2. O estado começa como uma lista vazia []
   const [dados, setDados] = useState<Leitura[]>([]);
 
-  useEffect(() => {
-    const buscarNovosDados = async () => {
-      try {
-        const resposta = await fetch(
-          'https://djublandiastation.onrender.com/api/sensores/recentes',
-        );
-        if (resposta.ok) {
-          const dadosAtualizados = await resposta.json();
-          setDados(dadosAtualizados);
-        }
-      } catch (erro) {
-        console.error('Erro:', erro);
-      }
-    };
+  const buscarNovosDados = async () => {
+    try {
+      // Captura a localidade do navegador ou usa Campinas como padrão
+      const loc = localStorage.getItem('localidadeSelecionada') || 'Campinas';
 
-    // 3. CRÍTICO: Chama a função imediatamente assim que a tela abre
+      const resposta = await fetch(
+        `https://djublandiastation.onrender.com/api/sensores/recentes?localidade=${loc}`,
+      );
+      if (resposta.ok) {
+        const dadosAtualizados = await resposta.json();
+        setDados(dadosAtualizados);
+      }
+    } catch (erro) {
+      console.error('Erro:', erro);
+    }
+  };
+
+  useEffect(() => {
+    // 1. Busca imediatamente ao carregar a tela
     buscarNovosDados();
 
-    // 4. E depois liga o relógio para atualizar a cada 60 segundos
+    // 2. Escuta o evento customizado disparado pela Navbar ao trocar de cidade
+    window.addEventListener('mudouLocalidade', buscarNovosDados);
+
+    // 3. Relógio para atualizar a cada 60 segundos automaticamente
     const relogio = setInterval(buscarNovosDados, 60000);
-    return () => clearInterval(relogio);
+
+    // Limpeza ao desmontar o componente
+    return () => {
+      window.removeEventListener('mudouLocalidade', buscarNovosDados);
+      clearInterval(relogio);
+    };
   }, []);
 
   const dadosGrafico = [...dados].reverse();
 
   const formatarHora = (dataString: any) => {
-    if (!dataString) return ''; // Proteção contra valores vazios
+    if (!dataString) return '';
     const data = new Date(dataString);
     return data.toLocaleTimeString('pt-BR', {
       hour: '2-digit',
@@ -62,64 +73,64 @@ export default function GraficoSensores() {
   const leituraAtual = dados.length > 0 ? dados[0] : null;
 
   return (
-    <div className='flex flex-col gap-6'>
-      {/* 1. Mudei para md:grid-cols-4 para caberem os 4 cards */}
+    // Padrão celular: padding menor (p-4). Desktop: padding maior (md:p-8)
+    <div className='flex flex-col gap-6 p-4 md:p-8 max-w-7xl mx-auto'>
       {leituraAtual && (
-        <div className='grid grid-cols-1 md:grid-cols-4 gap-4'>
-          <div className='bg-white p-6 rounded-xl shadow-sm border border-slate-200 border-l-4 border-l-red-500'>
-            <h3 className='text-slate-500 text-sm font-medium uppercase tracking-wider'>
+        // Padrão celular: 2 colunas. Desktop: 4 colunas
+        <div className='grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6'>
+          <div className='bg-white p-4 md:p-6 rounded-xl shadow-sm border border-slate-200 border-l-4 border-l-red-500'>
+            <h3 className='text-slate-500 text-xs md:text-sm font-medium uppercase tracking-wider'>
               Temperatura
             </h3>
-            <div className='mt-2 flex items-baseline gap-2'>
-              <p className='text-4xl font-bold text-slate-800'>
+            <div className='mt-2 flex items-baseline gap-1 md:gap-2'>
+              <p className='text-2xl md:text-4xl font-bold text-slate-800'>
                 {leituraAtual.temperatura}
               </p>
-              <p className='text-xl text-slate-500'>°C</p>
+              <p className='text-sm md:text-xl text-slate-500'>°C</p>
             </div>
           </div>
 
-          <div className='bg-white p-6 rounded-xl shadow-sm border border-slate-200 border-l-4 border-l-blue-500'>
-            <h3 className='text-slate-500 text-sm font-medium uppercase tracking-wider'>
+          <div className='bg-white p-4 md:p-6 rounded-xl shadow-sm border border-slate-200 border-l-4 border-l-blue-500'>
+            <h3 className='text-slate-500 text-xs md:text-sm font-medium uppercase tracking-wider'>
               Umidade
             </h3>
-            <div className='mt-2 flex items-baseline gap-2'>
-              <p className='text-4xl font-bold text-slate-800'>
+            <div className='mt-2 flex items-baseline gap-1 md:gap-2'>
+              <p className='text-2xl md:text-4xl font-bold text-slate-800'>
                 {leituraAtual.umidade}
               </p>
-              <p className='text-xl text-slate-500'>%</p>
+              <p className='text-sm md:text-xl text-slate-500'>%</p>
             </div>
           </div>
 
-          <div className='bg-white p-6 rounded-xl shadow-sm border border-slate-200 border-l-4 border-l-teal-500'>
-            <h3 className='text-slate-500 text-sm font-medium uppercase tracking-wider'>
+          <div className='bg-white p-4 md:p-6 rounded-xl shadow-sm border border-slate-200 border-l-4 border-l-teal-500'>
+            <h3 className='text-slate-500 text-xs md:text-sm font-medium uppercase tracking-wider'>
               Vento
             </h3>
-            <div className='mt-2 flex items-baseline gap-2'>
-              <p className='text-4xl font-bold text-slate-800'>
+            <div className='mt-2 flex items-baseline gap-1 md:gap-2'>
+              <p className='text-2xl md:text-4xl font-bold text-slate-800'>
                 {leituraAtual.vento}
               </p>
-              <p className='text-xl text-slate-500'>km/h</p>
+              <p className='text-sm md:text-xl text-slate-500'>km/h</p>
             </div>
           </div>
 
-          {/* NOVO CARD: Pressão Atmosférica */}
-          <div className='bg-white p-6 rounded-xl shadow-sm border border-slate-200 border-l-4 border-l-purple-500'>
-            <h3 className='text-slate-500 text-sm font-medium uppercase tracking-wider'>
+          <div className='bg-white p-4 md:p-6 rounded-xl shadow-sm border border-slate-200 border-l-4 border-l-purple-500'>
+            <h3 className='text-slate-500 text-xs md:text-sm font-medium uppercase tracking-wider'>
               Pressão
             </h3>
-            <div className='mt-2 flex items-baseline gap-2'>
-              <p className='text-4xl font-bold text-slate-800'>
+            <div className='mt-2 flex items-baseline gap-1 md:gap-2'>
+              <p className='text-2xl md:text-4xl font-bold text-slate-800'>
                 {leituraAtual.pressao}
               </p>
-              <p className='text-xl text-slate-500'>hPa</p>
+              <p className='text-sm md:text-xl text-slate-500'>hPa</p>
             </div>
           </div>
         </div>
       )}
 
-      {/* 2. Atualização do Gráfico com Eixo Y Secundário */}
-      <div className='bg-white p-6 rounded-xl shadow-sm border border-slate-200 h-[450px]'>
-        <h2 className='text-xl font-semibold mb-6'>
+      {/* Gráfico: altura menor no celular, maior no desktop */}
+      <div className='bg-white p-4 md:p-6 rounded-xl shadow-sm border border-slate-200 h-[400px] md:h-[500px]'>
+        <h2 className='text-lg md:text-xl font-semibold mb-6'>
           Monitoramento em Tempo Real
         </h2>
 
@@ -132,13 +143,11 @@ export default function GraficoSensores() {
               tick={{ fontSize: 12, fill: '#64748b' }}
             />
 
-            {/* Eixo Esquerdo (Para Temp e Umidade: 0 a 100) */}
             <YAxis
               yAxisId='esquerda'
               tick={{ fontSize: 12, fill: '#64748b' }}
             />
 
-            {/* Eixo Direito (Para Pressão: 1000 a 1030) */}
             <YAxis
               yAxisId='direita'
               orientation='right'
@@ -174,8 +183,6 @@ export default function GraficoSensores() {
               strokeWidth={3}
               dot={false}
             />
-
-            {/* Nova linha de Pressão apontando para o Eixo Direito */}
             <Line
               yAxisId='direita'
               type='monotone'
