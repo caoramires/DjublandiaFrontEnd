@@ -49,7 +49,8 @@ export default function GraficoSensores() {
 
   const dadosGrafico = [...dados].reverse();
 
-  const formatarHora = (dataString: string) => {
+  const formatarHora = (dataString: any) => {
+    if (!dataString) return ''; // Proteção contra valores vazios
     const data = new Date(dataString);
     return data.toLocaleTimeString('pt-BR', {
       hour: '2-digit',

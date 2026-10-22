@@ -56,23 +56,25 @@ export default function HistoricoMedicoes() {
 
   // Se for um período longo (ex: um ano inteiro), formatar a hora e a data fica confuso.
   // Vamos formatar o eixo X de forma inteligente baseada no volume de dados.
-  const formatarEixoX = (dataString: string) => {
+  const formatarEixoX = (dataString: any) => {
+    if (!dataString) return '';
     const d = new Date(dataString);
     if (!mes)
-      return d.toLocaleDateString('pt-BR', { month: 'short', day: 'numeric' }); // Visão Anual
+      return d.toLocaleDateString('pt-BR', { month: 'short', day: 'numeric' });
     if (!dia)
       return d.toLocaleDateString('pt-BR', {
         day: '2-digit',
         hour: '2-digit',
         minute: '2-digit',
-      }); // Visão Mensal
+      });
     return d.toLocaleTimeString('pt-BR', {
       hour: '2-digit',
       minute: '2-digit',
-    }); // Visão Diária
+    });
   };
 
-  const formataTooltip = (dataString: string) => {
+  const formataTooltip = (dataString: any) => {
+    if (!dataString) return '';
     return new Date(dataString).toLocaleString('pt-BR', {
       day: '2-digit',
       month: '2-digit',
