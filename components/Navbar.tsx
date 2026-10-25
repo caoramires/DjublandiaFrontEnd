@@ -44,9 +44,21 @@ export default function Navbar() {
               onChange={mudarLocalidade}
               className='bg-transparent text-white outline-none cursor-pointer'
             >
-              <option value='Campinas'>Campinas</option>
-              <option value='Itajubá'>Itajubá</option>
-              <option value='São Paulo'>São Paulo</option>
+              <option value='Campinas' className='bg-slate-800 text-white'>
+                Campinas
+              </option>
+              <option
+                value='Djublândia-SFX'
+                className='bg-slate-800 text-white'
+              >
+                Djublandia-SFX
+              </option>
+              <option value='São Paulo' className='bg-slate-800 text-white'>
+                Sao Paulo
+              </option>
+              <option value='São Paulo' className='bg-slate-800 text-white'>
+                Sao Paulo
+              </option>
             </select>
           </div>
         </div>
