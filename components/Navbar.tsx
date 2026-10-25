@@ -48,16 +48,16 @@ export default function Navbar() {
                 Campinas
               </option>
               <option
-                value='Djublândia-SFX'
+                value='Djublandia-SFX'
                 className='bg-slate-800 text-white'
               >
-                Djublandia-SFX
+                Djublândia-SFX
               </option>
               <option value='São Paulo' className='bg-slate-800 text-white'>
                 Sao Paulo
               </option>
-              <option value='São Paulo' className='bg-slate-800 text-white'>
-                Sao Paulo
+              <option value='Paraty' className='bg-slate-800 text-white'>
+                Paraty
               </option>
             </select>
           </div>
