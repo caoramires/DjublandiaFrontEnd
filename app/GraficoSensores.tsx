@@ -114,7 +114,7 @@ export default function GraficoSensores() {
             </div>
           </div>
 
-          <div className='bg-white p-4 md:p-6 rounded-xl shadow-sm border border-slate-200 border-l-4 border-l-purple-500'>
+          <div className='bg-white p-4 md:p-6 rounded-xl shadow-sm border border-slate-200 border-l-4 border-l-green-500'>
             <h3 className='text-slate-500 text-xs md:text-sm font-medium uppercase tracking-wider'>
               Pressão
             </h3>
@@ -152,7 +152,7 @@ export default function GraficoSensores() {
               yAxisId='direita'
               orientation='right'
               domain={['auto', 'auto']}
-              tick={{ fontSize: 12, fill: '#8b5cf6' }}
+              tick={{ fontSize: 12, fill: '#22c55e' }}
             />
 
             <Tooltip
@@ -188,7 +188,7 @@ export default function GraficoSensores() {
               type='monotone'
               dataKey='pressao'
               name='Pressão (hPa)'
-              stroke='#8b5cf6'
+              stroke='#22c55e'
               strokeWidth={3}
               dot={false}
             />
