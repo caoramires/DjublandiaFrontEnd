@@ -20,7 +20,7 @@ const configMetricas: Record<string, { cor: string; label: string }> = {
   temperatura: { cor: '#ef4444', label: 'Temperatura (°C)' },
   umidade: { cor: '#3b82f6', label: 'Umidade (%)' },
   vento: { cor: '#14b8a6', label: 'Vento (km/h)' },
-  pressao: { cor: '#a855f7', label: 'Pressão (hPa)' },
+  pressao: { cor: '#22c55e', label: 'Pressão (hPa)' },
 };
 
 function HistoricoConteudo() {
