@@ -26,7 +26,6 @@ export default function GraficoSensores() {
 
   const buscarNovosDados = async () => {
     try {
-      // Captura a localidade do navegador ou usa Campinas como padrão
       const loc = localStorage.getItem('localidadeSelecionada') || 'Campinas';
 
       const resposta = await fetch(
@@ -42,16 +41,10 @@ export default function GraficoSensores() {
   };
 
   useEffect(() => {
-    // 1. Busca imediatamente ao carregar a tela
     buscarNovosDados();
-
-    // 2. Escuta o evento customizado disparado pela Navbar ao trocar de cidade
     window.addEventListener('mudouLocalidade', buscarNovosDados);
-
-    // 3. Relógio para atualizar a cada 60 segundos automaticamente
     const relogio = setInterval(buscarNovosDados, 60000);
 
-    // Limpeza ao desmontar o componente
     return () => {
       window.removeEventListener('mudouLocalidade', buscarNovosDados);
       clearInterval(relogio);
@@ -59,25 +52,22 @@ export default function GraficoSensores() {
   }, []);
 
   const dadosGrafico = [...dados].reverse();
+  const leituraAtual = dados.length > 0 ? dados[0] : null;
 
-  const formatarHora = (dataString: any) => {
+  const formatarHoraCurta = (dataString: string) => {
     if (!dataString) return '';
     const data = new Date(dataString);
+    if (isNaN(data.getTime())) return dataString.slice(0, 5);
     return data.toLocaleTimeString('pt-BR', {
       hour: '2-digit',
       minute: '2-digit',
-      second: '2-digit',
     });
   };
 
-  const leituraAtual = dados.length > 0 ? dados[0] : null;
-
   return (
-    // Padrão celular: padding menor (p-4). Desktop: padding maior (md:p-8)
-    <div className='flex flex-col gap-6 p-4 md:p-8 max-w-7xl mx-auto'>
+    <div className='flex flex-col gap-6 px-2 py-4 md:p-8 max-w-7xl mx-auto'>
       {leituraAtual && (
-        // Padrão celular: 2 colunas. Desktop: 4 colunas
-        <div className='grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6'>
+        <div className='grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6'>
           <div className='bg-white p-4 md:p-6 rounded-xl shadow-sm border border-slate-200 border-l-4 border-l-red-500'>
             <h3 className='text-slate-500 text-xs md:text-sm font-medium uppercase tracking-wider'>
               Temperatura
@@ -128,72 +118,85 @@ export default function GraficoSensores() {
         </div>
       )}
 
-      {/* Gráfico: altura menor no celular, maior no desktop */}
-      <div className='bg-white p-4 md:p-6 rounded-xl shadow-sm border border-slate-200 h-[400px] md:h-[500px]'>
-        <h2 className='text-lg md:text-xl font-semibold mb-6'>
-          Monitoramento em Tempo Real
-        </h2>
+      <div className='bg-white px-1 py-3 md:p-6 rounded-xl shadow-sm border border-slate-200 w-full'>
+        <div className='w-full h-[300px] md:h-[400px]'>
+          <ResponsiveContainer width='100%' height='100%'>
+            <LineChart
+              data={dadosGrafico}
+              margin={{ top: 10, right: 0, left: -10, bottom: 5 }}
+            >
+              <CartesianGrid strokeDasharray='3 3' stroke='#e2e8f0' />
 
-        <ResponsiveContainer width='100%' height='100%'>
-          <LineChart data={dadosGrafico}>
-            <CartesianGrid strokeDasharray='3 3' vertical={false} />
-            <XAxis
-              dataKey='timestamp'
-              tickFormatter={formatarHora}
-              tick={{ fontSize: 12, fill: '#64748b' }}
-            />
+              <XAxis
+                dataKey='timestamp'
+                tickFormatter={formatarHoraCurta}
+                minTickGap={25}
+                tick={{ fontSize: 11, fill: '#64748b' }}
+              />
 
-            <YAxis
-              yAxisId='esquerda'
-              tick={{ fontSize: 12, fill: '#64748b' }}
-            />
+              <YAxis
+                yAxisId='esquerda'
+                width={32}
+                tick={{ fontSize: 11, fill: '#64748b' }}
+                tickFormatter={(val) => `${Math.round(val)}`}
+              />
 
-            <YAxis
-              yAxisId='direita'
-              orientation='right'
-              domain={['auto', 'auto']}
-              tick={{ fontSize: 12, fill: '#22c55e' }}
-            />
+              <YAxis
+                yAxisId='direita'
+                orientation='right'
+                width={36}
+                domain={['auto', 'auto']}
+                tick={{ fontSize: 11, fill: '#22c55e' }}
+                tickFormatter={(val) => `${Math.round(val)}`}
+              />
 
-            <Tooltip
-              labelFormatter={formatarHora}
-              contentStyle={{
-                borderRadius: '8px',
-                border: 'none',
-                boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)',
-              }}
-            />
-            <Legend />
+              <Tooltip
+                labelFormatter={(label) =>
+                  `Horário: ${formatarHoraCurta(String(label))}`
+                }
+              />
 
-            <Line
-              yAxisId='esquerda'
-              type='monotone'
-              dataKey='temperatura'
-              name='Temp (°C)'
-              stroke='#ef4444'
-              strokeWidth={3}
-              dot={false}
-            />
-            <Line
-              yAxisId='esquerda'
-              type='monotone'
-              dataKey='umidade'
-              name='Umidade (%)'
-              stroke='#3b82f6'
-              strokeWidth={3}
-              dot={false}
-            />
-            <Line
-              yAxisId='direita'
-              type='monotone'
-              dataKey='pressao'
-              name='Pressão (hPa)'
-              stroke='#22c55e'
-              strokeWidth={3}
-              dot={false}
-            />
-          </LineChart>
-        </ResponsiveContainer>
+              <Legend wrapperStyle={{ fontSize: '12px', paddingTop: '8px' }} />
+
+              <Line
+                yAxisId='esquerda'
+                type='monotone'
+                dataKey='temperatura'
+                name='Temp (°C)'
+                stroke='#ef4444'
+                strokeWidth={2}
+                dot={false}
+              />
+              <Line
+                yAxisId='esquerda'
+                type='monotone'
+                dataKey='umidade'
+                name='Umid (%)'
+                stroke='#3b82f6'
+                strokeWidth={2}
+                dot={false}
+              />
+              <Line
+                yAxisId='esquerda'
+                type='monotone'
+                dataKey='vento'
+                name='Vento (km/h)'
+                stroke='#14b8a6'
+                strokeWidth={2}
+                dot={false}
+              />
+              <Line
+                yAxisId='direita'
+                type='monotone'
+                dataKey='pressao'
+                name='Pressão (hPa)'
+                stroke='#22c55e'
+                strokeWidth={2}
+                dot={false}
+              />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
       </div>
     </div>
   );
