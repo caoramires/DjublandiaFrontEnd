@@ -10,7 +10,7 @@ export default function SobrePage() {
         </h1>
         <p className='mt-3 text-slate-600 leading-relaxed'>
           Em 2021, em plena pandemia, depois de criar alguns dispositios com
-          microprocessadores, tive a ideia de fazer uma estação meteorológica
+          microcontroladore, tive a ideia de fazer uma estação meteorológica
           para o sitio do Eduardo e Denise em São Francisco Xavier.
         </p>
         <p className='mt-3 text-slate-600 leading-relaxed'>
@@ -19,15 +19,15 @@ export default function SobrePage() {
           Voltei a desenvolver de forma compulsiva.
         </p>
         <p className='mt-3 text-slate-600 leading-relaxed'>
-          Havia esquecido do desafio. Mas depois de desenvolver sistemas bem
-          mais complexos, envolvendo IA, Machine Learning, scraping,... fui
-          convidado para um novo projeto envolvendo tecnologias que não
-          dominava. Foi assim que para estudar Next.js, MongoDB em ambiente
-          Dokku, resolvi fechar o ciclo.
+          Havia esquecido do desafio. Mas em setembro de 2026, depois de
+          desenvolver sistemas bem mais complexos, envolvendo IA, Machine
+          Learning, scraping,... fui convidado para um novo projeto envolvendo
+          tecnologias que não dominava. Foi assim que, para estudar Next.js,
+          MongoDB em ambiente Dokku; resolvi fechar o ciclo.
         </p>
         <p className='mt-3 text-slate-600 leading-relaxed'>
           Djublandia Station é um protótipo de uma estação climática para estudo
-          das variações meteorológicas ao longo do tempo. Num momento onde o
+          das variações meteorológicas ao longo do tempo. Em um momento onde o
           mundo discute aquecimento global, vou poder pesquisar, com dados
           próprios, como o clima vem se comportando em diferentes regiões.
         </p>
