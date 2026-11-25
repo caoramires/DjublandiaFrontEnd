@@ -7,7 +7,14 @@ export default function Home() {
       <div className='max-w-5xl mx-auto'>
         <h1 className='text-3xl font-bold mb-2'>Estação Meteorológica</h1>
         <p className='text-slate-500 mb-8'>
-          Monitoramento em tempo real by Carlos Ramires
+          Monitoramento em tempo real by{' '}
+          <a
+            href='https://www.carlosramires.com'
+            target='_blank'
+            rel='noopener noreferrer'
+            className='text-blue-600 hover:underline'
+          ></a>
+          Carlos Ramires
         </p>
 
         {/* O componente agora é independente e busca os dados sozinho */}

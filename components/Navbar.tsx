@@ -53,14 +53,21 @@ export default function Navbar() {
               >
                 Djublândia-SFX
               </option>
+              {/*  Preparaçõa para novas estacoes
               <option value='São Paulo' className='bg-slate-800 text-white'>
                 Sao Paulo
               </option>
               <option value='Paraty' className='bg-slate-800 text-white'>
                 Paraty
-              </option>
+              </option> */}
             </select>
           </div>
+          <Link
+            href='/sobre'
+            className='text-sm font-medium text-slate-300 hover:text-white transition-colors px-2 py-1'
+          >
+            Sobre
+          </Link>
         </div>
       </div>
     </nav>
