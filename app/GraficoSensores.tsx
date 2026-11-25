@@ -64,6 +64,19 @@ export default function GraficoSensores() {
     });
   };
 
+  const formatarDataHora = (dataString: string) => {
+    if (!dataString) return '';
+    const data = new Date(dataString);
+    if (isNaN(data.getTime())) return dataString;
+    return data.toLocaleString('pt-BR', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  };
+
   return (
     <div className='flex flex-col gap-6 px-2 py-4 md:p-8 max-w-7xl mx-auto'>
       {leituraAtual && (
@@ -152,7 +165,7 @@ export default function GraficoSensores() {
 
               <Tooltip
                 labelFormatter={(label) =>
-                  `Horário: ${formatarHoraCurta(String(label))}`
+                  `Horário: ${formatarDataHora(String(label))}`
                 }
               />
 
